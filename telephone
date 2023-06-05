@@ -1,0 +1,103 @@
+
+class HashTable:
+    def __init__(self, size):
+        self.size = size
+        self.table = [[] for _ in range(size)]
+
+    def hash(self, key):
+        return key % self.size
+
+    def insert_linear_probing(self, key, value):
+        index = self.hash(key)
+        while self.table[index] and self.table[index][0] != key:
+            index = (index + 1) % self.size
+        self.table[index] = (key, value)
+
+    def insert_separate_chaining(self, key, value):
+        index = self.hash(key)
+        self.table[index].append((key, value))
+
+    def lookup_linear_probing(self, key):
+        index = self.hash(key)
+        comparisons = 0
+        while self.table[index] and self.table[index][0] != key:
+            comparisons += 1
+            index = (index + 1) % self.size
+        if self.table[index] and self.table[index][0] == key:
+            return self.table[index][1], comparisons
+        return None, comparisons
+
+    def lookup_separate_chaining(self, key):
+        index = self.hash(key)
+        comparisons = 0
+        for kv in self.table[index]:
+            comparisons += 1
+            if kv[0] == key:
+                return kv[1], comparisons
+        return None, comparisons
+
+
+def add_entry(hash_table, collision_handling):
+    key = int(input("Enter the key (telephone number): "))
+    value = input("Enter the value (client name): ")
+
+    if collision_handling == "linear_probing":
+        hash_table.insert_linear_probing(key, value)
+    else:
+        hash_table.insert_separate_chaining(key, value)
+
+    print("Entry added.")
+
+
+def lookup_entry(hash_table, collision_handling):
+    key = int(input("Enter the key (telephone number) to lookup: "))
+
+    if collision_handling == "linear_probing":
+        value, comparisons = hash_table.lookup_linear_probing(key)
+    else:
+        value, comparisons = hash_table.lookup_separate_chaining(key)
+
+    if value is not None:
+        print(f"Name: {value}, Contact No.: {key}")
+    else:
+        print(f"The telephone number {key} was not found.")
+
+    print(f"Number of comparisons required: {comparisons}")
+
+
+def main():
+    size = int(input("Enter the size of the hash table: "))
+    hash_table = HashTable(size)
+
+    while True:
+        print("\n*** Hash Table Menu ***")
+        print("1. Add Entry (Linear Probing)")
+        print("2. Lookup Entry (Linear Probing)")
+        print("3. Add Entry (Separate Chaining)")
+        print("4. Lookup Entry (Separate Chaining)")
+        print("5. Quit")
+
+        choice = input("Enter your choice: ")
+
+        if choice == "1":
+            add_entry(hash_table, "linear_probing")
+
+        elif choice == "2":
+            lookup_entry(hash_table, "linear_probing")
+
+        elif choice == "3":
+            add_entry(hash_table, "separate_chaining")
+
+        elif choice == "4":
+            lookup_entry(hash_table, "separate_chaining")
+
+        elif choice == "5":
+            print("Exiting the program.")
+            break
+
+        else:
+            print("Invalid choice. Please try again.")
+
+
+if __name__ == "__main__":
+    main()
