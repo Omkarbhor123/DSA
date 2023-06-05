@@ -1,0 +1,108 @@
+
+// prefix expression : /+a*bc+x/yz
+
+#include <iostream>
+#include <stack>
+
+using namespace std;
+
+struct Node
+{
+    char data;
+    Node *left, *right;
+};
+
+Node *constructTree(string expression)
+{
+    stack<Node *> st;
+
+    for (int i = expression.length() - 1; i >= 0; i--)
+    {
+        char c = expression[i];
+
+        if (isalpha(c))
+        {
+            Node *node = new Node();
+            node->data = c;
+            st.push(node);
+        }
+        else
+        {
+            Node *left = st.top();
+            st.pop();
+            Node *right = st.top();
+            st.pop();
+
+            Node *node = new Node();
+            node->data = c;
+            node->left = left;
+            node->right = right;
+            st.push(node);
+        }
+    }
+
+    return st.top();
+}
+
+void postOrderTraversal(Node *root)
+{
+    if (root == nullptr)
+        return;
+
+    stack<Node *> st;
+    Node *curr = root;
+
+    do
+    {
+        while (curr)
+        {
+            if (curr->right)
+                st.push(curr->right);
+
+            st.push(curr);
+            curr = curr->left;
+        }
+
+        curr = st.top();
+        st.pop();
+
+        if (curr->right && !st.empty() && curr->right == st.top())
+        {
+            st.pop();
+            st.push(curr);
+            curr = curr->right;
+        }
+        else
+        {
+            cout << curr->data << " ";
+            curr = nullptr;
+        }
+    } while (!st.empty());
+}
+
+void deleteTree(Node *root)
+{
+    if (root == nullptr)
+        return;
+
+    deleteTree(root->left);
+    deleteTree(root->right);
+    delete root;
+}
+
+int main()
+{
+    string expression;
+    cout << "Enter the prefix expression: ";
+    getline(cin, expression);
+
+    Node *root = constructTree(expression);
+
+    cout << "Post-order traversal: ";
+    postOrderTraversal(root);
+    cout << endl;
+
+    deleteTree(root);
+
+    return 0;
+}
