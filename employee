@@ -1,0 +1,175 @@
+/*Company maintains employee information as employee ID, name, designation and salary.
+Allow user to add, delete information of employee. Display information of particular employee.
+If employee does not exist an appropriate message is displayed. If it is, then the system displays the employee details.
+Use index sequential file to maintain the data.*/
+
+#include <iostream>
+#include <fstream>
+#include <string>
+
+using namespace std;
+
+struct employee
+{
+  int id;
+  string name;
+  string designation;
+  float salary;
+};
+
+void add_employee(employee &e)
+{
+  cout << "Enter employee ID: ";
+  cin >> e.id;
+
+  cout << "Enter employee name: ";
+  cin >> e.name;
+
+  cout << "Enter employee designation: ";
+  cin >> e.designation;
+
+  cout << "Enter employee salary: ";
+  cin >> e.salary;
+
+  ofstream file("employee.idx", ios::app);
+  file << e.id << " " << e.name << " " << e.designation << " " << e.salary << endl;
+  file.close();
+
+  cout << "Employee information added successfully." << endl;
+}
+
+void delete_employee(int id)
+{
+  ifstream file("employee.idx");
+  ofstream temp_file("temp.idx");
+
+  employee e;
+  bool found = false;
+  while (file >> e.id >> e.name >> e.designation >> e.salary)
+  {
+    if (e.id != id)
+    {
+      temp_file << e.id << " " << e.name << " " << e.designation << " " << e.salary << endl;
+    }
+    else
+    {
+      found = true;
+    }
+  }
+
+  file.close();
+  temp_file.close();
+
+  remove("employee.idx");
+  rename("temp.idx", "employee.idx");
+
+  if (found)
+  {
+    cout << "Employee with ID " << id << " deleted successfully." << endl;
+  }
+  else
+  {
+    cout << "No record found for employee ID " << id << endl;
+  }
+}
+
+void display_employee(int id)
+{
+  ifstream file("employee.idx");
+
+  employee e;
+  bool found = false;
+  while (file >> e.id >> e.name >> e.designation >> e.salary)
+  {
+    if (e.id == id)
+    {
+      cout << "Employee ID: " << e.id << endl;
+      cout << "Employee Name: " << e.name << endl;
+      cout << "Employee Designation: " << e.designation << endl;
+      cout << "Employee Salary: " << e.salary << endl;
+      found = true;
+      break;
+    }
+  }
+
+  file.close();
+
+  if (!found)
+  {
+    cout << "No record found for employee ID " << id << endl;
+  }
+}
+
+void search_employee(int id)
+{
+  ifstream file("employee.idx");
+
+  employee e;
+  bool found = false;
+  while (file >> e.id >> e.name >> e.designation >> e.salary)
+  {
+    if (e.id == id)
+    {
+      cout << "Employee ID: " << e.id << endl;
+      cout << "Employee Name: " << e.name << endl;
+      cout << "Employee Designation: " << e.designation << endl;
+      cout << "Employee Salary: " << e.salary << endl;
+      found = true;
+      break;
+    }
+  }
+
+  file.close();
+
+  if (!found)
+  {
+    cout << "No record found for employee ID " << id << endl;
+  }
+}
+
+int main()
+{
+  int choice;
+  employee e;
+
+  while (true)
+  {
+    cout << "Choose an option:" << endl;
+    cout << "1. Add employee" << endl;
+    cout << "2. Delete employee" << endl;
+    cout << "3. Display employee" << endl;
+    cout << "4. Search employee" << endl;
+    cout << "5. Exit" << endl;
+
+    cin >> choice;
+
+    switch (choice)
+    {
+    case 1:
+      add_employee(e);
+      break;
+    case 2:
+      cout << "Enter employee ID to delete: ";
+      cin >> e.id;
+      delete_employee(e.id);
+      break;
+    case 3:
+      cout << "Enter employee ID to display: ";
+      cin >> e.id;
+      display_employee(e.id);
+      break;
+    case 4:
+      cout << "Enter employee ID to search: ";
+      cin >> e.id;
+      search_employee(e.id);
+      break;
+    case 5:
+      cout << "Exiting program..." << endl;
+      exit(0);
+    default:
+      cout << "Invalid choice. Please try again." << endl;
+    }
+  }
+
+  return 0;
+}
