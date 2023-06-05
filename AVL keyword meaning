@@ -1,0 +1,362 @@
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+struct Node
+{
+  string keyword;
+  string meaning;
+  Node *left;
+  Node *right;
+};
+
+class Dictionary
+{
+public:
+  // Constructor
+  Dictionary()
+  {
+    root = NULL;
+  }
+
+  // Function to add a keyword and its meaning to the dictionary
+  void addKeyword(string keyword, string meaning)
+  {
+    Node *newNode = new Node();
+    newNode->keyword = keyword;
+    newNode->meaning = meaning;
+    newNode->left = NULL;
+    newNode->right = NULL;
+
+    insertNode(root, newNode);
+  }
+
+  // Function to delete a keyword from the dictionary
+  void deleteKeyword(string keyword)
+  {
+    deleteNode(root, keyword);
+  }
+
+  // Function to update the meaning of a keyword in the dictionary
+  void updateValue(string keyword, string meaning)
+  {
+    updateNode(root, keyword, meaning);
+  }
+
+  // Function to display all keywords and meanings in ascending or descending order
+  void displayAll(bool ascending)
+  {
+    displayNodes(root, ascending);
+  }
+
+  // Function to find the maximum number of comparisons required to search for a keyword
+  int findMaxComparisons()
+  {
+    return findMaxComparisons(root);
+  }
+
+private:
+  Node *root;
+
+  // Function to insert a node into the dictionary
+  void insertNode(Node *&node, Node *newNode)
+  {
+    if (node == NULL)
+    {
+      node = newNode;
+    }
+    else
+    {
+      if (newNode->keyword < node->keyword)
+      {
+        insertNode(node->left, newNode);
+      }
+      else
+      {
+        insertNode(node->right, newNode);
+      }
+    }
+
+    updateBalance(node);
+  }
+
+  // Function to delete a node from the dictionary
+  void deleteNode(Node *&node, string keyword)
+  {
+    if (node == NULL)
+    {
+      return;
+    }
+
+    if (keyword < node->keyword)
+    {
+      deleteNode(node->left, keyword);
+    }
+    else if (keyword > node->keyword)
+    {
+      deleteNode(node->right, keyword);
+    }
+    else
+    {
+      // Node to be deleted is found
+      if (node->left == NULL && node->right == NULL)
+      {
+        // Node is a leaf node
+        delete node;
+        node = NULL;
+      }
+      else if (node->left == NULL)
+      {
+        // Node has only a right child
+        Node *temp = node;
+        node = node->right;
+        delete temp;
+      }
+      else if (node->right == NULL)
+      {
+        // Node has only a left child
+        Node *temp = node;
+        node = node->left;
+        delete temp;
+      }
+      else
+      {
+        // Node has two children
+        Node *successor = getSuccessor(node->right);
+        node->keyword = successor->keyword;
+        node->meaning = successor->meaning;
+        deleteNode(node->right, successor->keyword);
+      }
+    }
+
+    updateBalance(node);
+  }
+
+  // Function to update the meaning of a node
+  void updateNode(Node *&node, string keyword, string meaning)
+  {
+    if (node == NULL)
+    {
+      return;
+    }
+
+    if (keyword == node->keyword)
+    {
+      node->meaning = meaning;
+    }
+    else if (keyword < node->keyword)
+    {
+      updateNode(node->left, keyword, meaning);
+    }
+    else
+    {
+      updateNode(node->right, keyword, meaning);
+    }
+  }
+
+  // Function to display the nodes in ascending or descending order
+  void displayNodes(Node *node, bool ascending)
+  {
+    if (node == NULL)
+    {
+      return;
+    }
+
+    if (ascending)
+    {
+      displayNodes(node->left, ascending);
+      cout << node->keyword << " = " << node->meaning << endl;
+      displayNodes(node->right, ascending);
+    }
+    else
+    {
+      displayNodes(node->right, ascending);
+      cout << node->keyword << " = " << node->meaning << endl;
+      displayNodes(node->left, ascending);
+    }
+  }
+
+  // Function to find the maximum number of comparisons required to search for a keyword
+  int findMaxComparisons(Node *node)
+  {
+    if (node == NULL)
+    {
+      return 0;
+    }
+
+    int leftHeight = getHeight(node->left);
+    int rightHeight = getHeight(node->right);
+
+    return max(leftHeight, rightHeight) + 1;
+  }
+
+  // Function to get the successor node of a given node
+  Node *getSuccessor(Node *node)
+  {
+    Node *current = node;
+    while (current && current->left != NULL)
+    {
+      current = current->left;
+    }
+    return current;
+  }
+
+  // Function to get the height of a node
+  int getHeight(Node *node)
+  {
+    if (node == NULL)
+    {
+      return 0;
+    }
+
+    int leftHeight = getHeight(node->left);
+    int rightHeight = getHeight(node->right);
+
+    return max(leftHeight, rightHeight) + 1;
+  }
+
+  // Function to calculate the balance factor of a node
+  int getBalanceFactor(Node *node)
+  {
+    if (node == NULL)
+    {
+      return 0;
+    }
+
+    int leftHeight = getHeight(node->left);
+    int rightHeight = getHeight(node->right);
+
+    return leftHeight - rightHeight;
+  }
+
+  // Function to update the balance of a node and perform rotations if necessary
+  void updateBalance(Node *&node)
+  {
+    int balanceFactor = getBalanceFactor(node);
+
+    if (balanceFactor > 1)
+    {
+      if (getBalanceFactor(node->left) >= 0)
+      {
+        rotateRight(node);
+      }
+      else
+      {
+        rotateLeftRight(node);
+      }
+    }
+    else if (balanceFactor < -1)
+    {
+      if (getBalanceFactor(node->right) <= 0)
+      {
+        rotateLeft(node);
+      }
+      else
+      {
+        rotateRightLeft(node);
+      }
+    }
+  }
+
+  // Function to perform a right rotation on a node
+  void rotateRight(Node *&node)
+  {
+    Node *temp = node->left;
+    node->left = temp->right;
+    temp->right = node;
+    node = temp;
+  }
+
+  // Function to perform a left rotation on a node
+  void rotateLeft(Node *&node)
+  {
+    Node *temp = node->right;
+    node->right = temp->left;
+    temp->left = node;
+    node = temp;
+  }
+
+  // Function to perform a left-right rotation on a node
+  void rotateLeftRight(Node *&node)
+  {
+    rotateLeft(node->left);
+    rotateRight(node);
+  }
+
+  // Function to perform a right-left rotation on a node
+  void rotateRightLeft(Node *&node)
+  {
+    rotateRight(node->right);
+    rotateLeft(node);
+  }
+};
+
+int main()
+{
+  Dictionary dictionary;
+  int choice;
+  string keyword, meaning;
+
+  while (true)
+  {
+    cout << "----------------------" << endl;
+    cout << "Dictionary Menu:" << endl;
+    cout << "1. Add Keyword" << endl;
+    cout << "2. Delete Keyword" << endl;
+    cout << "3. Update Meaning" << endl;
+    cout << "4. Display All (Ascending)" << endl;
+    cout << "5. Display All (Descending)" << endl;
+    cout << "6. Find Maximum Comparisons" << endl;
+    cout << "7. Exit" << endl;
+    cout << "Enter your choice: ";
+    cin >> choice;
+    cout << "----------------------" << endl;
+
+    switch (choice)
+    {
+    case 1:
+      cout << "Enter keyword: ";
+      cin >> keyword;
+      cout << "Enter meaning: ";
+      cin.ignore();
+      getline(cin, meaning);
+      dictionary.addKeyword(keyword, meaning);
+      cout << "Keyword added successfully!" << endl;
+      break;
+    case 2:
+      cout << "Enter keyword to delete: ";
+      cin >> keyword;
+      dictionary.deleteKeyword(keyword);
+      cout << "Keyword deleted successfully!" << endl;
+      break;
+    case 3:
+      cout << "Enter keyword to update: ";
+      cin >> keyword;
+      cout << "Enter new meaning: ";
+      cin.ignore();
+      getline(cin, meaning);
+      dictionary.updateValue(keyword, meaning);
+      cout << "Meaning updated successfully!" << endl;
+      break;
+    case 4:
+      cout << "Displaying all keywords and meanings (Ascending):" << endl;
+      dictionary.displayAll(true);
+      break;
+    case 5:
+      cout << "Displaying all keywords and meanings (Descending):" << endl;
+      dictionary.displayAll(false);
+      break;
+    case 6:
+      cout << "Maximum comparisons required: " << dictionary.findMaxComparisons() << endl;
+      break;
+    case 7:
+      cout << "Exiting program..." << endl;
+      exit(0);
+    default:
+      cout << "Invalid choice. Please try again." << endl;
+    }
+  }
+
+  return 0;
+}
