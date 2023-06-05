@@ -1,0 +1,108 @@
+#include <iostream>
+using namespace std;
+
+int cost[20][20]; // Matrix declared as a global variable
+
+class Graph
+{
+    int v;
+
+public:
+    Graph()
+    {
+        for (int i = 1; i <= 20; i++)
+        {
+            for (int j = 1; j <= 20; j++)
+            {
+                cost[i][j] = 0;
+            }
+        }
+    }
+
+    void create();
+    void display();
+    void prims();
+};
+
+void Graph::create()
+{
+    cout << "\n Enter the total number of vertices/houses in a lane: ";
+    cin >> v;
+
+    for (int i = 1; i <= v; i++)
+    {
+        for (int j = i + 1; j <= v; j++)
+        {
+            cout << "\n Press 0 if no edge or provide the cost of the edge between " << i << " and " << j << ": ";
+            cin >> cost[i][j];
+            cost[j][i] = cost[i][j]; // Assigns the same cost for both directions
+        }
+    }
+}
+
+void Graph::display()
+{
+    cout << "\n Adjacency Matrix is:";
+    for (int i = 1; i <= v; i++)
+    {
+        cout << "\n";
+        for (int j = 1; j <= v; j++)
+        {
+            cout << "\t" << cost[i][j];
+        }
+    }
+}
+
+void Graph::prims()
+{
+    int mincost = 0;
+    int visit[20] = {0}; // Array to track visited vertices
+    int path[20] = {0};  // Array to store the selected path in the Minimum Spanning Tree
+    int pos = 1;
+
+    visit[1] = 1; // Mark vertex 1 as visited and include it in the MST
+    path[pos++] = 1;
+
+    cout << "\n INITIALLY MINIMUM COST IS " << mincost;
+
+    for (int k = 1; k <= v - 1; k++)
+    {
+        int min = 9999; // Initialize the minimum cost to a large value
+        int row = 0, col = 0;
+
+        for (int i = 1; i <= v; i++)
+        {
+            for (int j = 1; j <= v; j++)
+            {
+                if (visit[i] == 1 && visit[j] == 0 && cost[i][j] != 0 && min > cost[i][j])
+                {
+                    min = cost[i][j];
+                    row = i;
+                    col = j;
+                }
+            }
+        }
+
+        mincost += min;
+        visit[col] = 1;
+        path[pos++] = col;
+        cost[row][col] = cost[col][row] = 0;
+    }
+
+    cout << "\nTotal minimum cost: " << mincost;
+    cout << "\nShortest Path is: ";
+    for (int i = 1; i <= v; i++)
+    {
+        cout << path[i] << " ";
+    }
+}
+
+int main()
+{
+    Graph g;
+    cout << "\n CREATE MST";
+    g.create();
+    g.display();
+    g.prims();
+    return 0;
+}
