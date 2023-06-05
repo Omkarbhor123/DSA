@@ -1,0 +1,136 @@
+def add(s, element):
+    s.append(element)
+
+
+def remove(s, element):
+    if element in s:
+        s.remove(element)
+
+
+def contains(s, element):
+    return element in s
+
+
+def size(s):
+    return len(s)
+
+
+def display(s):
+    return iter(s)
+
+
+def intersection(set1, set2):
+    result = []
+    for element in set1:
+        if element in set2:
+            result.append(element)
+    return result
+
+
+def union(set1, set2):
+    result = set1.copy()
+    for element in set2:
+        if element not in result:
+            result.append(element)
+    return result
+
+
+def difference(set1, set2):
+    result = []
+    for element in set1:
+        if element not in set2:
+            result.append(element)
+    return result
+
+
+def subset(set1, set2):
+    for element in set1:
+        if element not in set2:
+            return False
+    return True
+
+
+def print_menu():
+    print()
+    print()
+    print("1. Add an element to the set")
+    print("2. Remove an element from the set")
+    print("3. Check if an element is in the set")
+    print("4. Get the size of the set")
+    print("5. display set elements")
+    print("6. Perform set intersection")
+    print("7. Perform set union")
+    print("8. Perform set difference")
+    print("9. Check if a set is a subset of another set")
+    print("10. Exit")
+
+
+def main():
+    set1 = []
+    set2 = []
+
+    while True:
+        print_menu()
+        choice = input("Enter your choice: ")
+
+        if choice == "1":
+            
+            n=int(input("enter how many elements you want to add :"))
+            for i in range (n):
+                element = input("Enter the element to add: ")
+                add(set1, element)
+            print("Elements are added to the set1.")
+
+        elif choice == "2":
+            element = input("Enter the element to remove: ")
+            remove(set1, element)
+            print("Element removed from the set.")
+
+        elif choice == "3":
+            element = input("Enter the element to check: ")
+            if contains(set1, element):
+                print("The element is in the set.")
+            else:
+                print("The element is not in the set.")
+
+        elif choice == "4":
+            print("Size of the set:", size(set1))
+
+        elif choice == "5":
+            print()
+            print("Displaying set elements:")
+            for element in display(set1):
+                print(element, end=" ")
+
+        elif choice == "6":
+            set2 = input("Enter elements for the second set (comma-separated): ").split(",")
+            intersection_set = intersection(set1, set2)
+            print("Intersection set:", intersection_set)
+
+        elif choice == "7":
+            set2 = input( "Enter elements for the second set (comma-separated): ").split(",")
+            union_set = union(set1, set2)
+            print("Union set:", union_set)
+
+        elif choice == "8":
+            set2 = input( "Enter elements for the second set (comma-separated): ").split(",")
+            difference_set = difference(set1, set2)
+            print("Difference set:", difference_set)
+
+        elif choice == "9":
+            set2 = input("Enter elements for the second set (comma-separated): ").split(",")
+            if subset(set1, set2):
+                print("The first set is a subset of the second set.")
+            else:
+                print("The first set is not a subset of the second set.")
+
+        elif choice == "10":
+            print("Exiting the program.")
+            break
+
+        else:
+            print("Invalid choice. Please try again.")
+
+
+if __name__ == "__main__":
+    main()
