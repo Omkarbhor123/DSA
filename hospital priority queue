@@ -1,0 +1,114 @@
+#include <iostream>
+#include <queue>
+#include <string>
+
+using namespace std;
+
+struct Patient
+{
+    string name;
+    int priority;
+};
+
+bool operator<(const Patient &a, const Patient &b)//implicit operator overloading it is called by the priority queue implicitly at the time of adding patient
+{
+    return a.priority > b.priority; // Using greater than to prioritize patients with lower priority values
+}
+
+void addPatient(priority_queue<Patient> &PQ)
+{
+    string name;
+    int priority;
+
+    cout << "Enter patient name: ";
+    cin.ignore();
+    getline(cin, name);
+    cout << "Enter patient priority (1 - Serious, 2 - Non-serious, 3 - General Checkup): ";
+    cin >> priority;
+
+    PQ.push({name, priority});
+    cout << "Patient added successfully.\n";
+}
+
+void servePatient(priority_queue<Patient> &PQ)
+{
+    if (!PQ.empty())
+    {
+        Patient patient = PQ.top();
+        PQ.pop();
+
+        cout << "Serving patient: " << patient.name << " (Priority: " << patient.priority << ")\n";
+    }
+    else
+    {
+        cout << "No patients in the queue.\n";
+    }
+}
+
+void displayPatients(const priority_queue<Patient> &PQ)
+{
+    if (!PQ.empty())
+    {
+        cout << "----- Patient List -----\n";
+        priority_queue<Patient> tempPatients = PQ; // Create a temporary copy of the priority queue
+
+        while (!tempPatients.empty())
+        {
+            Patient patient = tempPatients.top();
+            tempPatients.pop();
+            cout << "Name: " << patient.name << ", Priority: " << patient.priority << endl;
+        }
+
+        cout << "------------------------\n";
+    }
+    else
+    {
+        cout << "No patients in the queue.\n";
+    }
+}
+
+void displayMenu()
+{
+    cout << "----- Menu -----\n";
+    cout << "1. Add a patient\n";
+    cout << "2. Serve a patient\n";
+    cout << "3. Display patient list\n";
+    cout << "4. Exit\n";
+    cout << "----------------\n";
+}
+
+int main()
+{
+    priority_queue<Patient> PQ;
+
+    int choice = 0;
+    while (choice != 4)
+    {
+        displayMenu();
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice)
+        {
+        case 1:
+            addPatient(PQ);
+            break;
+        case 2:
+            servePatient(PQ);
+            break;
+        case 3:
+            displayPatients(PQ);
+            break;
+        case 4:
+            cout << "Exiting...\n";
+            break;
+        default:
+            cout << "Invalid choice. Please try again.\n";
+            break;
+        }
+
+        cout << endl;
+    }
+
+    return 0;
+}
