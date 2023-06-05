@@ -1,0 +1,57 @@
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+struct Node {
+  int data;
+  double probability;
+  Node* left;
+  Node* right;
+};
+
+Node* createNode(int data, double probability) {
+  Node* newNode = new Node();
+  newNode->data = data;
+  newNode->probability = probability;
+  newNode->left = nullptr;
+  newNode->right = nullptr;
+  return newNode;
+}
+
+void insertNode(Node* root, int data, double probability) {
+  if (root == nullptr) {
+    root = createNode(data, probability);
+  } else if (data < root->data) {
+    insertNode(root->left, data, probability);
+  } else {
+    insertNode(root->right, data, probability);
+  }
+}
+
+double getCost(Node* root) {
+  if (root == nullptr) {
+    return 0;
+  } else {
+    return root->probability + getCost(root->left) + getCost(root->right);
+  }
+}
+
+Node* buildOptimalBST(vector<int> keys, vector<double> probabilities) {
+  int n = keys.size();
+  Node* root = nullptr;
+  for (int i = 0; i < n; i++) {
+    insertNode(root, keys[i], probabilities[i]);
+  }
+  return root;
+}
+
+int main() {
+  vector<int> keys = {1, 2, 3, 4, 5};
+  vector<double> probabilities = {0.1, 0.2, 0.3, 0.4, 0.5};
+  Node* root = buildOptimalBST(keys, probabilities);
+  double cost = getCost(root);
+  cout << "The cost of the optimal BST is: " << cost << endl;
+
+  return 0;
+}
