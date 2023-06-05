@@ -1,0 +1,105 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <unordered_map>
+
+using namespace std;
+
+// Structure to represent a flight edge
+struct Flight
+{
+    string destination;
+    int cost; // Cost can be time or fuel used
+};
+
+// Graph class using adjacency list representation
+class FlightGraph
+{
+private:
+    unordered_map<string, vector<Flight>> graph; // here graph unordered map stores starting city and vector stores the destination cities and its cost  from that city
+
+public:
+    // Add a flight edge between two cities
+    void addFlight(const string &source, const string &destination, int cost)
+    {
+        graph[source].push_back({destination, cost});
+    }
+
+    // Display the flight paths from a given city
+    void displayFlights(const string &city)
+    {
+        cout << "Flights from " << city << ":" << endl;
+        if (graph.find(city) != graph.end()) // find function will return iterator if key is present in the map and it will not go up to the end of graph so the if condition will get executed
+        {
+            for (const Flight &flight : graph[city]) // the for loop is used to iterate over vector in the map it is called range based for loop
+            // it's first part before colon is nothing but an variable like as i ,j,k which we use in the traditional for loop and it will iterate on graph[source] so the range of the for loop is no.of cities connected with given cities
+            {
+                cout << "-> " << flight.destination << " (Cost: " << flight.cost << ")" << endl;
+            }
+        }
+        else
+        {
+            cout << "No flights available from " << city << endl;
+        }
+    }
+
+    // Display the menu options
+    void displayMenu()
+    {
+        cout << endl;
+        cout << "Flight Graph Menu:" << endl;
+        cout << "1. Add Flight" << endl;
+        cout << "2. Display Flights from City" << endl;
+        cout << "3. Exit" << endl;
+    }
+};
+
+// Test the FlightGraph class
+int main()
+{
+    FlightGraph flightGraph;
+
+    int choice;
+    string source, destination;
+    int cost;
+
+    while (true)
+    {
+        flightGraph.displayMenu();
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice)
+        {
+        case 1:
+            cout << endl;
+            cout << "Enter source city: ";
+            cin.ignore();
+            getline(cin, source);
+            cout << "Enter destination city: ";
+            getline(cin, destination);
+            cout << "Enter cost: ";
+            cin >> cost;
+            flightGraph.addFlight(source, destination, cost);
+            cout << "Flight added successfully!" << endl;
+            break;
+        case 2:
+            cout << endl;
+            cout << "Enter city name: ";
+            cin.ignore();
+            getline(cin, source);
+            flightGraph.displayFlights(source);
+            break;
+        case 3:
+            cout << "Exiting... Thank you!" << endl;
+            return 0;
+        default:
+            cout << "Invalid choice. Please try again." << endl;
+            break;
+        }
+
+        cout << endl;
+    }
+
+    return 0;
+}
