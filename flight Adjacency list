@@ -32,7 +32,6 @@ public:
         if (graph.find(city) != graph.end()) // find function will return iterator if key is present in the map and it will not go up to the end of graph so the if condition will get executed
         {
             for (const Flight &flight : graph[city]) // the for loop is used to iterate over vector in the map it is called range based for loop
-            // it's first part before colon is nothing but an variable like as i ,j,k which we use in the traditional for loop and it will iterate on graph[source] so the range of the for loop is no.of cities connected with given cities
             {
                 cout << "-> " << flight.destination << " (Cost: " << flight.cost << ")" << endl;
             }
@@ -54,7 +53,7 @@ public:
     }
 };
 
-// Test the FlightGraph class
+
 int main()
 {
     FlightGraph flightGraph;
