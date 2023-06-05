@@ -1,0 +1,220 @@
+/*Department maintains a student information. The file contains roll number, name, division and address.
+ Allow user to add, delete information of student. Display information of particular employee.
+ If record of student does not exist an appropriate message is displayed.
+If it is, then the system displays the student details. Use sequential file to main the data.*/
+
+#include <iostream>
+#include <fstream>
+#include <string>
+
+using namespace std;
+
+struct student
+{
+    int roll_number;
+    string name;
+    string division;
+    string address;
+};
+
+void add_student(student &s)
+{
+    cout << "Enter roll number: ";
+    cin >> s.roll_number;
+
+    cout << "Enter name: ";
+    cin >> s.name;
+
+    cout << "Enter division: ";
+    cin >> s.division;
+
+    cout << "Enter address: ";
+    cin >> s.address;
+
+    ofstream file("student.txt", ios::app);
+    file << s.roll_number << " " << s.name << " " << s.division << " " << s.address << endl;
+    file.close();
+
+    cout << "Student information added successfully." << endl;
+}
+
+void delete_student(int roll_number)
+{
+    ifstream file("student.txt");
+    ofstream temp_file("temp.txt");
+
+    student s; // created student object s to store content readed from the file 
+    bool found = false;
+    while (file >> s.roll_number >> s.name >> s.division >> s.address)
+    {
+        if (s.roll_number != roll_number)
+        {
+            temp_file << s.roll_number << " " << s.name << " " << s.division << " " << s.address << endl;
+        }
+        else
+        {
+            found = true;
+        }
+    }
+
+    file.close();
+    temp_file.close();
+
+    remove("student.txt");
+    rename("temp.txt", "student.txt");
+
+    if (found)
+    {
+        cout << "Student with roll number " << roll_number << " deleted successfully." << endl;
+    }
+    else
+    {
+        cout << "No record found for roll number " << roll_number << endl;
+    }
+}
+
+void display_student(int roll_number)
+{
+    ifstream file("student.txt");
+
+    student s;
+    bool found = false;
+    while (file >> s.roll_number >> s.name >> s.division >> s.address)
+    {
+        if (s.roll_number == roll_number)
+        {
+            cout << "Roll number: " << s.roll_number << endl;
+            cout << "Name: " << s.name << endl;
+            cout << "Division: " << s.division << endl;
+            cout << "Address: " << s.address << endl;
+            found = true;
+            break;
+        }
+    }
+
+    file.close();
+
+    if (!found)
+    {
+        cout << "No record found for roll number " << roll_number << endl;
+    }
+}
+
+void modify_student(int roll_number)
+{
+    fstream file("student.txt", ios::in | ios::out);
+
+    student s;
+    bool found = false;
+    while (file >> s.roll_number >> s.name >> s.division >> s.address)
+    {
+        if (s.roll_number == roll_number)
+        {
+            cout << "Enter new name: ";
+            cin >> s.name;
+
+            cout << "Enter new division: ";
+            cin >> s.division;
+
+            cout << "Enter new address: ";
+            cin >> s.address;
+
+            int pos = file.tellg() - static_cast<streampos>(sizeof(s));  
+            file.seekp(pos);
+            file << s.roll_number << " " << s.name << " " << s.division << " " << s.address << endl;
+
+            found = true;
+            break;
+        }
+    }
+
+    file.close();
+
+    if (found)
+    {
+        cout << "Student with roll number " << roll_number << " modified successfully." << endl;
+    }
+    else
+    {
+        cout << "No record found for roll number " << roll_number << endl;
+    }
+}
+
+void search_student(int roll_number)
+{
+    ifstream file("student.txt");
+
+    student s;
+    bool found = false;
+    while (file >> s.roll_number >> s.name >> s.division >> s.address)
+    {
+        if (s.roll_number == roll_number)
+        {
+            cout << "Roll number: " << s.roll_number << endl;
+            cout << "Name: " << s.name << endl;
+            cout << "Division: " << s.division << endl;
+            cout << "Address: " << s.address << endl;
+            found = true;
+            break;
+        }
+    }
+
+    file.close();
+
+    if (!found)
+    {
+        cout << "No record found for roll number " << roll_number << endl;
+    }
+}
+
+int main()
+{
+    int choice, roll_number;
+    student s;
+
+    while (true)
+    {
+        cout << "1. Add Student\n";
+        cout << "2. Delete Student\n";
+        cout << "3. Display Student\n";
+        cout << "4. Modify Student\n";
+        cout << "5. Search Student\n";
+        cout << "6. Quit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice)
+        {
+        case 1:
+            add_student(s);
+            break;
+        case 2:
+            cout << "Enter roll number to delete: ";
+            cin >> roll_number;
+            delete_student(roll_number);
+            break;
+        case 3:
+            cout << "Enter roll number to display: ";
+            cin >> roll_number;
+            display_student(roll_number);
+            break;
+        case 4:
+            cout << "Enter roll number to modify: ";
+            cin >> roll_number;
+            modify_student(roll_number);
+            break;
+        case 5:
+            cout << "Enter roll number to search: ";
+            cin >> roll_number;
+            search_student(roll_number);
+            break;
+        case 6:
+            cout << "Quitting program..." << endl;
+            exit(0);
+        default:
+            cout << "Invalid choice. Please try again." << endl;
+        }
+    }
+
+    return 0;
+}
